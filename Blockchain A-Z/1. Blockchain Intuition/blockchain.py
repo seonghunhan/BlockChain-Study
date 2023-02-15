@@ -8,9 +8,6 @@ import json
 # jsonify 이용해서 json형식으로 채굴된 새로운 블록의 핵심 정보로 돌아간다
 from flask import Flask, jsonify
 
-# Creating a Wep App
-
-
 
 # Part1 - Building a Blockchain
 
@@ -92,3 +89,38 @@ class Blockchain :
             return True
                   
 # Part2 - Mining our Blockchain
+
+# Creating a Web App
+app = Flask(__name__)
+
+# Creating a Blockchain
+blockchain = Blockchain()
+
+# Mining a new block
+@app.route('/mine_block', methods=['GET'])
+def mine_block() :
+      #증명을 얻기위해선 작업 증명을 해야함
+      previous_block = blockchain.get_previous_block()
+      previous_proof = previous_block['proof']
+      proof = blockchain.proof_of_work(previous_proof)
+      previous_hash = blockchain.hash(previous_block)
+      block = blockchain.create_block(proof, previous_hash)
+      
+      response = {'message' : '축하해, 너는 블록을 채굴했어!',
+                  'index' : block['index'],
+                  'timestamp ' : block['timestamp'],
+                  'proof' : block['proof'],
+                  'previous_hash' : block['previous_hash']}
+      
+      return jsonify(response), 200
+
+# Getting the full Blockchain
+@app.route('/get_chain', methods=['GET'])
+def get_chain() :
+      # 초기에는 빈리스트지만 mine블럭하면 풀체인으로 바뀌어있을것임
+      response = {'chain' : blockchain.chain, 
+                  'length' : len(blockchain.chain)}
+      
+      return jsonify(response), 200
+
+app.run(host='0.0.0.0', port = 5000)
