@@ -80,10 +80,13 @@ class Blockchain :
                   proof = block['proof']
                   hash_operation = hashlib.sha256(str(proof**2 - previous_proof**2).encode()).hexdigest()
                   
+                  #작업 증명의 선행 제로가 4개가 아닐경우 False반환
                   if hash_operation[:4] != '0000' :
                         return False
                   
+                  #현재블록을 이전블록으로
                   previous_block = block
+                  #다음블록 탐색하기 위함
                   block_index += 1
             
             return True
@@ -122,5 +125,17 @@ def get_chain() :
                   'length' : len(blockchain.chain)}
       
       return jsonify(response), 200
+
+# Checking if the Blockvhain is valid
+@app.route('/is_valid', methods=['GET'])
+def is_valid():
+      is_valid = blockchain.is_chain_valid(blockchain.chain)
+      
+      if is_valid :
+            response = {'Message' : 'All good'}
+      else :
+            response = {'Message' : 'we have a problem, the blockchain is not valid'}
+            
+      return jsonify(response)
 
 app.run(host='0.0.0.0', port = 5000)
