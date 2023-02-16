@@ -172,7 +172,7 @@ def mine_block() :
       previous_proof = previous_block['proof']
       proof = blockchain.proof_of_work(previous_proof)
       previous_hash = blockchain.hash(previous_block)
-      blockchain.add_transaction(sender = node_address, receiver = 'Hunnn', amount = 1) #암호화폐
+      blockchain.add_transaction(sender = node_address, receiver = '5002B', amount = 1) #암호화폐
       block = blockchain.create_block(proof, previous_hash)
       
       response = {'message' : '축하해, 너는 블록을 채굴했어!',
@@ -241,7 +241,6 @@ def conect_node() :
       return jsonify(response), 201
 
 # Replacing the chain by the longest chain if needed
-# 각자의 노드들을 연결함(합의과정)
 @app.route('/replace_chain', methods=['GET'])
 def replace_chain():
       #체인이 가장 길어서 교체가 필요없는경우 False 반환
@@ -258,4 +257,4 @@ def replace_chain():
 
 
 # Running the app
-app.run(host='0.0.0.0', port = 5000)
+app.run(host='0.0.0.0', port = 5002)
