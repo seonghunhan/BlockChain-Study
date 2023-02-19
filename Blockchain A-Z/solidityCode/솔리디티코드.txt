@@ -1,0 +1,69 @@
+//huncoin ICO
+// Version of compuler
+pragma solidity ^0.4.17;
+
+
+contract huncoin_ico{
+
+    // Introducing the maximum number of add available for sale
+    //퍼블릭은 계약하는사람만
+    uint public max_huncoins = 1000000;
+
+    // Intoducing the USD to huncoins conversion rate
+    uint public usd_to_huncoins = 1000;
+
+    // Introducing the total number of huncoins that have been bought by the investors
+    uint public total_huncoins_bought = 0;
+
+    //Mapping from the investor addres to its equity in huncoin and USD
+    // 매핑은 데이터가 배열에 저장되는 함수
+    // 주소를 인풋으로 받아서 코인으로 반환
+    mapping(address => uint) equity_huncoins;
+
+    // 미국 달러로 반환
+    mapping(address => uint) equity_usd;
+
+    // Checking if an investor can buy huncoins
+    // 투자자가 특정금액으로 특정시간에 살수있는지 판단
+    // 
+    modifier can_buy_huncoins(uint usd_invested) {
+        require (usd_invested * usd_to_huncoins + total_huncoins_bought <= max_huncoins);
+        _;
+    }
+
+    // 이 함수는 투자자의 훈코인 에퀴티를 얻고 입력값은 투자자, 에퀴티는USD
+    function equiy_in_huncoins(address investor) external constant returns (uint) {
+        return equity_huncoins[investor];
+    }
+
+    function equiy_in_usd(address investor) external constant returns (uint) {
+        return equity_usd[investor];
+    }
+
+    // 훈코인 사기, 익스터널에서는 살수 있는지부터 확인하기위함
+    function buy_huncoins(address investor, uint usd_invested) external
+    can_buy_huncoins(usd_invested) {
+        // 몇코인 샀는지 환산 (1달러는 1000훈코인)
+        uint huncoins_bought = usd_invested * usd_to_huncoins;
+        equity_huncoins[investor] += huncoins_bought;
+
+        // 투자자의 usd이쿼티구하기 코인에 1000나누면 얼마나(usd)썼는지 알수있음 
+        equity_usd[investor] = equity_huncoins[investor] / 1000;
+
+        // 총 훈코인 누적하기
+        total_huncoins_bought += huncoins_bought;
+    } 
+
+    //훈코인 팔기 (인자는 투자자주소랑, 코인얼마나 팔지)
+    function sell_huncoins(address investor, uint huncoins_sold) external {
+        // 몇코인 팔았는지 투자자인덱스에 차감하기
+        equity_huncoins[investor] -= huncoins_sold;
+
+        // 투자자의 usd이쿼티구하기 코인에 1000나누면 얼마나(usd)썼는지 알수있음 
+        equity_usd[investor] = equity_huncoins[investor] / 1000;
+
+        // 총 훈코인 차감하기
+        total_huncoins_bought -= huncoins_sold;
+    }
+
+}

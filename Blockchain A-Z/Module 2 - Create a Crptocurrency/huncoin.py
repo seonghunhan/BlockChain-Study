@@ -118,6 +118,7 @@ class Blockchain :
             #이 트랜잭션은 새로생길(마지막인덱스의 +1)로 갈것임
             return previous_block['index'] + 1   
         
+        #이게 노드들을 서로 연결하는과정!!!!!!
         #네트워크에 노드 추가, 여기서 address는 url
       def add_node(self, address) :
           #parsed_url 이거 프린트해보면 http, 127.0.01~:포트번호 이런거 나옴
@@ -125,6 +126,7 @@ class Blockchain :
           #위에서 파싱한 url의 정보중 127.0.0~:포트번호 이런것만 추가하겠다는거임
           self.nodes.add(parsed_url.netloc)
           
+          #서로 연결된 노드들은 각자의 블록들중 가장 긴체인!!!!!!(개념에서도 정리했음)을 대표체인으로 생각하고 합의하기!!!!
       def replace_chain(self):
           #전세계 노드의 전부를 network로 정의
           network = self.nodes
@@ -206,6 +208,7 @@ def is_valid():
       return jsonify(response)
 
 # Adding a new transaction to the Blockchain
+# 채굴X 그냥 단순히 코인을 보내는 과정을 트랜잭션에 추가!
 @app.route('/add_transaction', methods=['POST'])
 def add_transaction() :
     #POST메서드로 리퀘스트 파싱하는방법
@@ -225,6 +228,7 @@ def add_transaction() :
 
 # Connecting new nodes
 # 탈중앙화에 새로운 노드 등록 -> POST
+# nodes.json을 이용해서 5001,5002,5003 연결(수작업)
 @app.route('/connect_node', methods=['POST'])
 def conect_node() :
       json = request.get_json()
@@ -241,7 +245,7 @@ def conect_node() :
       return jsonify(response), 201
 
 # Replacing the chain by the longest chain if needed
-# 각자의 노드들을 연결함(합의과정)
+# 각자의 노드들을 연결함(합의과정)(여기서는 그냥 가장긴걸로 공유하기로 함)
 @app.route('/replace_chain', methods=['GET'])
 def replace_chain():
       #체인이 가장 길어서 교체가 필요없는경우 False 반환
