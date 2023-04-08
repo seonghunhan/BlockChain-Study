@@ -21,7 +21,6 @@
 
 ## what did you study  
 
-<br>
 
 ### 블록체인
 
